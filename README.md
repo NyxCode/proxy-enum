@@ -1,6 +1,6 @@
 # proxy-enum
-![Crates.io](https://img.shields.io/crates/d/proxy-enum?style=flat-square)
-![](https://docs.rs/mio/badge.svg)  
+[![Crate](https://img.shields.io/crates/v/proxy-enum.svg)](https://crates.io/crates/proxy-enum)
+[![API](https://docs.rs/proxy-enum/badge.svg)](https://docs.rs/proxy-enum)
 
 Emulate dynamic dispatch and ["sealed classes"](https://kotlinlang.org/docs/reference/sealed-classes.html) using a proxy enum, which defers all method calls to its variants.
 
