@@ -1,0 +1,13 @@
+[package]
+name = "proxy-enum"
+version = "0.1.0"
+authors = ["Moritz Bischof <moritz.bischof@aleph-alpha.de>"]
+edition = "2018"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "1", features = [ "full", "visit", "fold" ] }
+quote = "1"
+proc-macro2 = "1"
