@@ -1,10 +1,13 @@
 [package]
 name = "proxy-enum"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Moritz Bischof <moritz.bischof@aleph-alpha.de>"]
 edition = "2018"
 description = "Emulate dynamic dispatch and sealed classes using a proxy enum, which defers all method calls to its variants."
 license = "MIT"
+readme = "README.md"
+repository = "https://github.com/NyxCode/proxy-enum"
+keywords = ["proxy", "enum", "sealed", "variant"]
 
 [lib]
 proc-macro = true
