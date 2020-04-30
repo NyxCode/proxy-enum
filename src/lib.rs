@@ -141,7 +141,7 @@ fn find_attr<'a>(attrs: &'a [Attribute], ident: &str) -> Option<&'a Attribute> {
     attr_idx(&attrs, ident).map(|idx| &attrs[idx])
 }
 
-fn gen_static_method_call(receiver_ty: &Type, signature: &Signature) -> TokenStream2 {
+fn gen_static_method_call(receiver: TokenStream2, signature: &Signature) -> TokenStream2 {
     let method_ident = &signature.ident;
 
     let args = signature
@@ -156,7 +156,7 @@ fn gen_static_method_call(receiver_ty: &Type, signature: &Signature) -> TokenStr
             _ => panic!("parameter binding must be an identifier"),
         });
 
-    quote! { <#receiver_ty>::#method_ident(__self #(, #args)*) }
+    quote! { #receiver::#method_ident(__self #(, #args)*) }
 }
 
 struct WrapperVariant {
@@ -217,8 +217,7 @@ fn implement_trait(
 ) {
     assert!(pseudo_impl.items.is_empty());
 
-    let receiver = &pseudo_impl.trait_.as_ref().unwrap().1;
-    let trait_ty = parse2::<Type>(quote! { #receiver }).unwrap();
+    let trait_ident = &trait_decl.ident;
 
     let proxy_methods = trait_decl.items.iter().map(|i| match i {
         TraitItem::Method(i) => {
@@ -233,7 +232,7 @@ fn implement_trait(
                 }
             }
 
-            let match_block = gen_match_block(variants, |_| gen_static_method_call(&trait_ty, sig));
+            let match_block = gen_match_block(variants, |_| gen_static_method_call(quote! { #trait_ident }, sig));
             let tokens = quote! { #sig { #match_block } };
             parse2::<ImplItem>(tokens).unwrap()
         }
@@ -261,7 +260,8 @@ fn implement_raw(variants: &[WrapperVariant], pseudo_impl: &mut ItemImpl) {
             }
 
             let match_block = gen_match_block(variants, |variant| {
-                gen_static_method_call(&variant.wrapped, &method.sig)
+                let ty = &variant.wrapped;
+                gen_static_method_call(quote! { #ty }, &method.sig)
             });
             let body = quote! { { #match_block } };
             method.block = syn::parse2(body).unwrap();
