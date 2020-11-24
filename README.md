@@ -72,7 +72,11 @@ mod proxy {
                 Animal::Mouse(mouse) => mouse.feed()
             }
         }
-    }
+    }  
+
+    impl From<Cat> for Animal { /* ... */ }
+    impl From<Lion> for Animal { /* ... */ }
+    impl From<Mouse> for Animal { /* ... */ }
 }
 ```
 This, however, will only compile if `Cat`, `Lion` and `Mouse` all have a method called `feed`.
