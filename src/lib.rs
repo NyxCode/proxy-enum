@@ -69,6 +69,24 @@
 //!             }
 //!         }
 //!     }
+//!     
+//!     impl From<Cat> for Animal {
+//!         fn from(from: Cat) -> Self {
+//!             Animal::Cat(from)
+//!         }
+//!     }
+//!
+//!     impl From<Lion> for Animal {
+//!         fn from(from: Lion) -> Self {
+//!             Animal::Lion(from)
+//!         }
+//!     }
+//!
+//!     impl From<Mouse> for Animal {
+//!         fn from(from: Mouse) -> Self {
+//!             Animal::Mouse(from)
+//!         }
+//!     }
 //! }
 //! ```
 //! This, however, will only compile if `Cat`, `Lion` and `Mouse` all have a method called `feed`.
@@ -314,6 +332,22 @@ impl GenerateProxyImpl {
             .get(&path)
             .unwrap_or_else(|| panic!("missing declaration of trait `{}`", path))
     }
+    
+    fn impl_from_variants(&self, module: &mut ItemMod) {
+        let proxy_enum = &self.proxy_enum;
+        for WrapperVariant { variant, wrapped, .. } in self.get_variants() {
+            let variant = &variant.ident;
+            let tokens = quote! {
+                impl From<#wrapped> for #proxy_enum {
+                    fn from(from: #wrapped) -> Self {
+                        #proxy_enum :: #variant(from)
+                    }
+                }
+            };
+            let from_impl: ItemImpl = syn::parse2(tokens).unwrap();
+            module.content.as_mut().unwrap().1.push(from_impl.into()); 
+        }
+    }
 }
 
 impl VisitMut for GenerateProxyImpl {
@@ -360,6 +394,7 @@ impl VisitMut for GenerateProxyImpl {
                 true
             }
         });
+        self.impl_from_variants(module);
     }
 
     // scan for trait declarations and store them
