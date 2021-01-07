@@ -1,6 +1,6 @@
 [package]
 name = "proxy-enum"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Moritz Bischof <moritz.bischof@aleph-alpha.de>"]
 edition = "2018"
 description = "Emulate dynamic dispatch and sealed classes using a proxy enum, which defers all method calls to its variants."

@@ -135,7 +135,7 @@ extern crate proc_macro2;
 use proc_macro::TokenStream;
 use std::collections::HashMap;
 
-use syn::export::TokenStream2;
+use proc_macro2::TokenStream as TokenStream2;
 use syn::visit_mut::VisitMut;
 use syn::{
     parse2, parse_macro_input, Attribute, Fields, FnArg, Ident, ImplItem, Item, ItemEnum, ItemImpl,
