@@ -69,7 +69,7 @@
 //!             }
 //!         }
 //!     }
-//!     
+//!
 //!     impl From<Cat> for Animal {
 //!         fn from(from: Cat) -> Self {
 //!             Animal::Cat(from)
@@ -250,7 +250,9 @@ fn implement_trait(
                 }
             }
 
-            let match_block = gen_match_block(variants, |_| gen_static_method_call(quote! { #trait_ident }, sig));
+            let match_block = gen_match_block(variants, |_| {
+                gen_static_method_call(quote! { #trait_ident }, sig)
+            });
             let tokens = quote! { #sig { #match_block } };
             parse2::<ImplItem>(tokens).unwrap()
         }
@@ -279,7 +281,7 @@ fn implement_raw(variants: &[WrapperVariant], pseudo_impl: &mut ItemImpl) {
 
             let match_block = gen_match_block(variants, |variant| {
                 let ty = &variant.wrapped;
-                gen_static_method_call(quote! { #ty }, &method.sig)
+                gen_static_method_call(quote! { <#ty> }, &method.sig)
             });
             let body = quote! { { #match_block } };
             method.block = syn::parse2(body).unwrap();
@@ -332,10 +334,13 @@ impl GenerateProxyImpl {
             .get(&path)
             .unwrap_or_else(|| panic!("missing declaration of trait `{}`", path))
     }
-    
+
     fn impl_from_variants(&self, module: &mut ItemMod) {
         let proxy_enum = &self.proxy_enum;
-        for WrapperVariant { variant, wrapped, .. } in self.get_variants() {
+        for WrapperVariant {
+            variant, wrapped, ..
+        } in self.get_variants()
+        {
             let variant = &variant.ident;
             let tokens = quote! {
                 impl From<#wrapped> for #proxy_enum {
@@ -345,7 +350,7 @@ impl GenerateProxyImpl {
                 }
             };
             let from_impl: ItemImpl = syn::parse2(tokens).unwrap();
-            module.content.as_mut().unwrap().1.push(from_impl.into()); 
+            module.content.as_mut().unwrap().1.push(from_impl.into());
         }
     }
 }
